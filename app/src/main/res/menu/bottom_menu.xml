@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="htpp://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cnb_unselectedColor="#921818"
+    tools:ignore="NamespaceTypo">
+
+    <item
+        android:id="@+id/inicio"
+        android:icon="@drawable/inicio_dp"
+        android:title="@string/inicio"
+        app:cnb_iconColor="@color/Inicio"
+        />
+    <item
+        android:id="@+id/cama"
+        android:icon="@drawable/cama_dp"
+        android:title="@string/sueno"
+        app:cnb_iconColor="@color/Cama"
+        />
+    <item
+        android:id="@+id/ejercicio"
+        android:icon="@drawable/ejercicio_dp"
+        android:title="@string/ejercicio"
+        app:cnb_iconColor="@color/Ejercicio"
+        />
+    <item
+        android:id="@+id/relax"
+        android:icon="@drawable/relax_dp"
+        android:title="@string/relax"
+        app:cnb_iconColor="@color/Relax"
+        />
+    <item
+        android:id="@+id/opciones"
+        android:icon="@drawable/opciones_dp"
+        android:title="@string/opciones"
+        app:cnb_iconColor="@color/Menu"
+        />
+
+</menu>

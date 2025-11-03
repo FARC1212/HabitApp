@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">HabitApp</string>
+    <string name="text_inicio">Inicio</string>
+    <string name="text_cama">Sueño</string>
+    <string name="text_relax">Relax</string>
+    <string name="text_ejercicio">Ejercicio</string>
+    <string name="inicio">Inicio</string>
+    <string name="sueno">Sueño</string>
+    <string name="ejercicio">Ejercicio</string>
+    <string name="relax">Relax</string>
+    <string name="opciones">Opciones</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
