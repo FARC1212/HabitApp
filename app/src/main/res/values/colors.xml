@@ -9,7 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="Inicio">#EBA2FF</color>
     <color name="Cama">#A2F7FF</color>
-    <color name="Ejercicio">#FFA2A2</color>
+    <color name="Ejercicio">#CFEEF6</color>
+    <color name="verde_agua">#26A69A</color>
     <color name="Relax">#F490D6</color>
     <color name="Menu">#FFFFFF</color>
 </resources>
