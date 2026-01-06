@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/ic_launcher_background"> <!-- Opcional: crea un drawable para un fondo con bordes redondeados -->
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="24/09/2024 (11:05 PM - 07:15 AM)" />
+
+    <TextView
+        android:id="@+id/totalTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="16sp"
+        tools:text="Tiempo Total: 8h 10m" />
+
+    <TextView
+        android:id="@+id/deepSleepTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="?android:attr/textColorSecondary"
+        tools:text="Profundo: 1h 30m" />
+
+    <TextView
+        android:id="@+id/mediumSleepTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorSecondary"
+        tools:text="Medio: 4h 10m" />
+
+    <TextView
+        android:id="@+id/lightSleepTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorSecondary"
+        tools:text="Ligero: 2h 30m" />
+
+</LinearLayout>

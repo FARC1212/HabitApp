@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-
+    implementation("com.google.code.gson:gson:2.9.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -55,6 +55,9 @@ dependencies {
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
+
+    // For MPAndroidChart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 
     testImplementation(libs.junit)
