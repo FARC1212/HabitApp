@@ -13,4 +13,15 @@
     <color name="verde_agua">#26A69A</color>
     <color name="Relax">#F490D6</color>
     <color name="Menu">#FFFFFF</color>
+
+    <color name="fondo_pantalla">#F5F5F5</color>
+
+    <color name="color_tarjeta">#FFFFFF</color>
+
+    <color name="texto_titulo">#333333</color>
+
+    <color name="color_ejercicio">#FF5722</color>
+
+
+
 </resources>

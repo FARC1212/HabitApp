@@ -289,15 +289,18 @@ class Cama : Fragment() {
     private fun analyzeAndSaveSession() {
         val sessionEndTime = Date()
         val startTime = sessionStartTime ?: return
-        val sessionData = savedSessionEntries.toList() // Usamos la lista de promedios de 30s
+        val sessionData = savedSessionEntries.toList()
 
         if (sessionData.isEmpty() || !isAdded) return
 
-        // 1. Analizar los datos para calcular los tiempos de cada fase
+        // 1. Analizar los datos
         val (lightSleepMinutes, mediumSleepMinutes, deepSleepMinutes) = analyzeSleepStages(sessionData)
         val totalMinutes = (sessionEndTime.time - startTime.time) / 60000
 
-        // 2. Formatear los datos para el modelo SleepSession
+        // Formateamos el texto (Ej: "7h 30m")
+        val totalTimeStr = formatMinutesToHoursAndMinutes(totalMinutes)
+
+        // 2. Formatear los datos para el modelo SleepSession (JSON)
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
@@ -305,14 +308,25 @@ class Cama : Fragment() {
             startDate = dateFormat.format(startTime),
             startTime = timeFormat.format(startTime),
             endTime = timeFormat.format(sessionEndTime),
-            totalTime = formatMinutesToHoursAndMinutes(totalMinutes),
+            totalTime = totalTimeStr,
             lightSleepTime = formatMinutesToHoursAndMinutes(lightSleepMinutes.toLong()),
             mediumSleepTime = formatMinutesToHoursAndMinutes(mediumSleepMinutes.toLong()),
             deepSleepTime = formatMinutesToHoursAndMinutes(deepSleepMinutes.toLong())
         )
 
-        // 3. Guardar el objeto SleepSession como un archivo JSON
+        // 3. Guardar JSON (Historial)
         saveSessionAsJson(session, startTime)
+
+        // --- NUEVO: GUARDAR PARA LA PANTALLA DE INICIO ---
+        val prefs = requireContext().getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
+        prefs.edit().apply {
+            // Guardamos el tiempo total (Ej: "7h 15m")
+            putString("ULTIMO_SUENO_TIEMPO", totalTimeStr)
+            // Guardamos la fecha para saber si es de hoy
+            putString("FECHA_ULTIMO_SUENO", dateFormat.format(sessionEndTime))
+            apply()
+        }
+        // ------------------------------------------------
     }
 
     // AÑADE esta función para el análisis de las fases de sueño

@@ -53,11 +53,15 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
+
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
 
     // For MPAndroidChart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation(libs.google.material)
 
 
     testImplementation(libs.junit)
