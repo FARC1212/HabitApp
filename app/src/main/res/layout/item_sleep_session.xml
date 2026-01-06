@@ -8,8 +8,7 @@
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
     android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:background="@drawable/ic_launcher_background"> <!-- Opcional: crea un drawable para un fondo con bordes redondeados -->
+    android:layout_marginBottom="4dp">
 
     <TextView
         android:id="@+id/dateTextView"
