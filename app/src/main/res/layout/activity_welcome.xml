@@ -9,8 +9,8 @@
     android:background="@color/fondo_pantalla">
 
     <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:src="@mipmap/logoapp_foreground"
         android:layout_marginBottom="24dp"/>
 
@@ -55,7 +55,7 @@
         android:id="@+id/btnComenzar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Comenzar"
+        android:text="Continuar"
         android:textSize="18sp"
         android:backgroundTint="#673AB7"
         android:textColor="@color/white"

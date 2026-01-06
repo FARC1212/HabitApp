@@ -45,8 +45,8 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     private fun irAlMenuPrincipal() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, SeleccionHabitosActivity::class.java)
         startActivity(intent)
-        finish() // Cerramos la bienvenida para que no pueda volver atrás con el botón 'Atrás'
+        finish()
     }
 }

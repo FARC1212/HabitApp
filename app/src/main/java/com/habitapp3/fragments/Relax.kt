@@ -1,34 +1,16 @@
 package com.habitapp3.fragments
 
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.habitapp3.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [Relax.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Relax : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,23 +20,34 @@ class Relax : Fragment() {
         return inflater.inflate(R.layout.fragment_relax, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Relax.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Relax().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onResume() {
+        super.onResume()
+        // Verificamos si debemos preguntar por el hábito cada vez que el usuario entra a esta pantalla
+        verificarSiDeseaActivar()
+    }
+
+    private fun verificarSiDeseaActivar() {
+        val context = context ?: return
+        val prefs = context.getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
+
+        // Verificamos si el hábito de RELAX está oculto (false)
+        val estaVisible = prefs.getBoolean("VER_RELAX", true)
+
+        // Si NO está visible (es false), lanzamos la pregunta
+        if (!estaVisible) {
+            AlertDialog.Builder(context)
+                .setTitle("¿Activar hábito de Relax?")
+                .setMessage("El seguimiento de estrés está desactivado en tu inicio. ¿Quieres añadir este hábito a tu tablero?")
+                .setPositiveButton("Sí, lo necesito") { _, _ ->
+                    // Guardamos que AHORA ES VISIBLE (true)
+                    prefs.edit().putBoolean("VER_RELAX", true).apply()
+                    Toast.makeText(context, "¡Relax agregado al Inicio!", Toast.LENGTH_SHORT).show()
                 }
-            }
+                .setNegativeButton("No por ahora") { dialog, _ ->
+                    // No hacemos nada, solo cerramos el diálogo
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 }

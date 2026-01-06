@@ -107,7 +107,35 @@ class Inicio : Fragment() {
         val prefs = context.getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
         val fechaHoySistema = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
-        // FECHA Y SALUDO
+        // ----------------------------------------------------
+        // 1. NUEVO: CONTROL DE VISIBILIDAD (OCULTAR TARJETAS)
+        // ----------------------------------------------------
+        // Leemos si el usuario activó estos hábitos (Por defecto 'true' para que se vean si no hay datos)
+        val verSueno = prefs.getBoolean("VER_SUENO", true)
+        val verEjercicio = prefs.getBoolean("VER_EJERCICIO", true)
+        val verRelax = prefs.getBoolean("VER_RELAX", true)
+
+        // Buscamos las tarjetas por el ID que acabamos de poner en el XML
+        val cardSueno = view.findViewById<View>(R.id.cardSuenoContainer)
+        val cardEjercicio = view.findViewById<View>(R.id.cardEjercicioContainer)
+        val cardRelax = view.findViewById<View>(R.id.cardRelaxContainer)
+
+        // Si el usuario dijo que NO quería ver sueño, usamos View.GONE (Desaparece y no ocupa espacio)
+        if (cardSueno != null) {
+            cardSueno.visibility = if (verSueno) View.VISIBLE else View.GONE
+        }
+
+        if (cardEjercicio != null) {
+            cardEjercicio.visibility = if (verEjercicio) View.VISIBLE else View.GONE
+        }
+
+        if (cardRelax != null) {
+            cardRelax.visibility = if (verRelax) View.VISIBLE else View.GONE
+        }
+
+        // ----------------------------------------------------
+        // 2. FECHA Y SALUDO (Lógica anterior)
+        // ----------------------------------------------------
         val tvSaludo = view.findViewById<TextView>(R.id.tvWelcome)
         val fechaTexto = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES")).format(Date())
         val nombreUsuario = prefs.getString("NOMBRE_USUARIO", "Usuario")
@@ -118,30 +146,41 @@ class Inicio : Fragment() {
             tvSaludo.text = "¡Hola, $nombreUsuario!\nHoy es ${fechaTexto.replaceFirstChar { it.uppercase() }}"
         }
 
-        // SUEÑO
-        val tvSuenoHoras = view.findViewById<TextView>(R.id.tvSuenoHoras)
-        val ultimoSueno = prefs.getString("ULTIMO_SUENO_TIEMPO", "--h --m")
-        tvSuenoHoras.text = ultimoSueno
-
-        // EJERCICIO
-        val nombreRutina = prefs.getString("NOMBRE_RUTINA_TEXTO", "Sin rutina")
-        val ultimoEntreno = prefs.getString("ULTIMO_ENTRENAMIENTO", "")
-        val tvRutinaTitulo = view.findViewById<TextView>(R.id.tvRutinaActual)
-        val tvEstado = view.findViewById<TextView>(R.id.tvEstadoEjercicio)
-
-        if (tvRutinaTitulo != null) {
-            tvRutinaTitulo.text = nombreRutina
-            tvRutinaTitulo.textSize = 20f
+        // ----------------------------------------------------
+        // 3. DATOS DE SUEÑO
+        // ----------------------------------------------------
+        if (verSueno) { // Solo actualizamos el texto si la tarjeta es visible
+            val tvSuenoHoras = view.findViewById<TextView>(R.id.tvSuenoHoras)
+            val ultimoSueno = prefs.getString("ULTIMO_SUENO_TIEMPO", "--h --m")
+            if (tvSuenoHoras != null) tvSuenoHoras.text = ultimoSueno
         }
 
-        if (tvEstado != null) {
-            if (ultimoEntreno == fechaHoySistema) {
-                tvEstado.text = "✅ ¡Rutina completada hoy!"
-                tvEstado.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-            } else {
-                tvEstado.text = "⏳ Pendiente por hacer"
-                tvEstado.setTextColor(android.graphics.Color.GRAY)
+        // ----------------------------------------------------
+        // 4. DATOS DE EJERCICIO
+        // ----------------------------------------------------
+        if (verEjercicio) { // Solo actualizamos texto si es visible
+            val nombreRutina = prefs.getString("NOMBRE_RUTINA_TEXTO", "Sin rutina")
+            val ultimoEntreno = prefs.getString("ULTIMO_ENTRENAMIENTO", "")
+
+            val tvRutinaTitulo = view.findViewById<TextView>(R.id.tvRutinaActual)
+            val tvEstado = view.findViewById<TextView>(R.id.tvEstadoEjercicio)
+
+            if (tvRutinaTitulo != null) {
+                tvRutinaTitulo.text = nombreRutina
+                tvRutinaTitulo.textSize = 20f
+            }
+
+            if (tvEstado != null) {
+                if (ultimoEntreno == fechaHoySistema) {
+                    tvEstado.text = "✅ ¡Rutina completada hoy!"
+                    tvEstado.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
+                } else {
+                    tvEstado.text = "⏳ Pendiente por hacer"
+                    tvEstado.setTextColor(android.graphics.Color.GRAY)
+                }
             }
         }
+
+        // (La sección de Relax no tenía lógica de texto todavía, así que solo ocultamos la tarjeta arriba)
     }
 }

@@ -1,5 +1,6 @@
 package com.habitapp3.fragments
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.habitapp3.R
@@ -35,9 +37,9 @@ class Ejercicio : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Vinculamos las vistas con los IDs que pusiste en tu XML
+        // 1. Vinculamos las vistas
         cardNotificacion = view.findViewById(R.id.cardNotificacion)
-        tvNotificacion = view.findViewById(R.id.tvMensajeEstado) // ¡Ahora sí existe!
+        tvNotificacion = view.findViewById(R.id.tvMensajeEstado)
         btnIr = view.findViewById(R.id.btnIrEjercicio)
         layoutGrafica = view.findViewById(R.id.layoutGrafica)
 
@@ -53,6 +55,33 @@ class Ejercicio : Fragment() {
         // Actualizamos la pantalla cada vez que el usuario entra
         verificarEstadoDiario()
         dibujarGraficaSemanal()
+
+        // --- NUEVO: Verificamos si quiere activar el hábito en el Inicio ---
+        verificarSiDeseaActivar()
+    }
+
+    // --- NUEVA FUNCIÓN: Pregunta si quiere mostrar la tarjeta en Inicio ---
+    private fun verificarSiDeseaActivar() {
+        val context = context ?: return
+        val prefs = context.getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
+
+        // OJO: Aquí la clave es VER_EJERCICIO
+        val estaVisible = prefs.getBoolean("VER_EJERCICIO", true)
+
+        if (!estaVisible) {
+            AlertDialog.Builder(context)
+                .setTitle("¿Activar hábito de Ejercicio?")
+                .setMessage("Actualmente no estás siguiendo este hábito en el inicio. ¿Quieres agregarlo ahora?")
+                .setPositiveButton("Sí, agregar") { _, _ ->
+                    // Guardamos el cambio
+                    prefs.edit().putBoolean("VER_EJERCICIO", true).apply()
+                    Toast.makeText(context, "¡A darle duro! Agregado al Inicio.", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("No, gracias") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 
     private fun verificarEstadoDiario() {
@@ -65,21 +94,20 @@ class Ejercicio : Fragment() {
             cardNotificacion.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.verde_agua))
             tvNotificacion.text = "¡Excelente trabajo hoy!"
             btnIr.text = "Ver Rutina"
-            // Cambiamos el color del texto del botón para que se vea bien sobre verde
             btnIr.setTextColor(ContextCompat.getColor(requireContext(), R.color.verde_agua))
             btnIr.background.setTint(Color.WHITE)
         } else {
-            // Si no ha entrenado: AMARILLO (O el color de alerta que prefieras)
+            // Si no ha entrenado: AMARILLO
             cardNotificacion.setCardBackgroundColor(Color.parseColor("#FFEB3B"))
             tvNotificacion.text = "¡No has hecho tu ejercicio diario!"
             btnIr.text = "Hacerlo ahora"
-            btnIr.setTextColor(Color.parseColor("#FFEB3B")) // Texto combina con fondo
-            btnIr.background.setTint(Color.BLACK) // Boton negro o blanco contraste
+            btnIr.setTextColor(Color.parseColor("#FFEB3B"))
+            btnIr.background.setTint(Color.BLACK)
         }
     }
 
     private fun dibujarGraficaSemanal() {
-        layoutGrafica.removeAllViews() // Limpiamos para no duplicar barras
+        layoutGrafica.removeAllViews()
         val prefs = requireContext().getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
 
         // Configuramos calendario al Lunes de esta semana
@@ -87,19 +115,23 @@ class Ejercicio : Fragment() {
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        // Creamos 7 barras
+        // --- IMPORTANTE: Usamos el nuevo sistema de historial (Set) para ser consistentes con el calendario ---
+        val historialSet = prefs.getStringSet("HISTORIAL_RUTINAS", emptySet()) ?: emptySet()
+
         for (i in 0 until 7) {
             val fechaCheck = format.format(calendar.time)
-            val entrenoEseDia = prefs.getBoolean("HISTORIAL_$fechaCheck", false)
+
+            // Verificamos si la fecha está en la lista de completados
+            val entrenoEseDia = historialSet.contains(fechaCheck)
 
             // Crear barra
             val barra = View(requireContext())
             val params = LinearLayout.LayoutParams(
-                0, // Ancho 0 con peso 1
-                if (entrenoEseDia) ViewGroup.LayoutParams.MATCH_PARENT else 20 // Alto dinámico
+                0,
+                if (entrenoEseDia) ViewGroup.LayoutParams.MATCH_PARENT else 20
             )
             params.weight = 1f
-            params.setMargins(8, 0, 8, 0) // Espacio entre barras
+            params.setMargins(8, 0, 8, 0)
             barra.layoutParams = params
 
             // Color
@@ -111,7 +143,6 @@ class Ejercicio : Fragment() {
 
             layoutGrafica.addView(barra)
 
-            // Avanzar un día
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
     }

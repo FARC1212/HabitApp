@@ -241,16 +241,59 @@ class Cama : Fragment() {
         cancelAlarm()
     }
 
+
     override fun onResume() {
         super.onResume()
+
+        // 1. Mantenemos tu lógica de la alarma (IMPORTANTE NO BORRAR)
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
             stopMonitoringReceiver, IntentFilter("com.habitapp3.STOP_MONITORING")
         )
+
+        // 2. NUEVO: Verificamos si debemos preguntar por el hábito
+        verificarSiDeseaActivar()
     }
 
-    override fun onPause() {
-        super.onPause()
-        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(stopMonitoringReceiver)
+    private fun verificarSiDeseaActivar() {
+        val context = context ?: return
+        val prefs = context.getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
+
+        // Verificamos si el hábito de SUEÑO está oculto (false)
+        // El segundo parámetro 'true' es el valor por defecto, así que si no existe, asumimos que sí se ve.
+        // Pero si el usuario lo desactivó en el registro, esto devolverá 'false'.
+        val estaVisible = prefs.getBoolean("VER_SUENO", true)
+
+        // Si NO está visible (es false), lanzamos la pregunta
+        if (!estaVisible) {
+            AlertDialog.Builder(context)
+                .setTitle("¿Activar hábito de Sueño?")
+                .setMessage("Este hábito está oculto en tu pantalla de inicio. ¿Deseas volver a mostrarlo para hacerle seguimiento?")
+                .setPositiveButton("Sí, agregar") { _, _ ->
+                    // Guardamos que AHORA ES VISIBLE (true)
+                    prefs.edit().putBoolean("VER_SUENO", true).apply()
+                    Toast.makeText(context, "¡Hábito de sueño agregado al Inicio!", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("No, solo mirar") { dialog, _ ->
+                    // No hacemos nada, solo cerramos el diálogo
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Limpieza de timers
+        chartUpdateTimer?.cancel()
+        dataCollectionTimer?.cancel()
+        soundMonitor?.stopMonitoring()
+
+        // AQUÍ es donde desconectamos el receptor de forma segura al cerrar la app
+        try {
+            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(stopMonitoringReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onDetach() {
