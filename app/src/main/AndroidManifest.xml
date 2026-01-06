@@ -9,9 +9,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/logoapp"
+        android:icon="@mipmap/logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/logoapp"
+        android:roundIcon="@mipmap/logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HabitApp3">
         <activity
