@@ -423,32 +423,26 @@ class Cama : Fragment() {
 
         val measurementDuration = 0.5 // Cada entrada son 30 segundos
 
-        // 1. AUTO-CALIBRACIÓN CON SUELO MÍNIMO DE 30 dB
-        // Buscamos el valor más bajo registrado. Si es menor a 30 (ej. 10 o 0),
-        // forzamos a que sea 30. Esto evita que errores de "silencio absoluto"
-        // hagan imposible detectar el sueño ligero.
-        val rawMin = entries.map { it.y }.minOrNull()?.toDouble() ?: 30.0
-        val minNoiseLevel = rawMin.coerceAtLeast(30.0)
+        // Volvemos a la agrupación original de 20 minutos (40 entradas)
+        val entriesPerChunk = 40
 
-        // 2. UMBRALES HÍBRIDOS (Dinámico + Tope Fijo)
-
-        // Sueño Profundo: Piso + 10dB (aprox 40dB), pero NUNCA más de 45dB.
-        val thresholdDeep = kotlin.math.min(minNoiseLevel + 10.0, 45.0)
-
-        // Sueño Medio: Piso + 20dB (aprox 50dB), pero NUNCA más de 60dB.
-        val thresholdMedium = kotlin.math.min(minNoiseLevel + 20.0, 60.0)
-
-        // 3. ANÁLISIS POR BLOQUES DE 10 MINUTOS
-        val entriesPerChunk = 20
+        // partialWindows = true permite procesar los minutos finales si no completan 20 min
         val chunks = entries.windowed(size = entriesPerChunk, step = entriesPerChunk, partialWindows = true)
 
         for (chunk in chunks) {
             val averageNoiseInChunk = chunk.map { it.y }.average()
+
+            // Calculamos la duración EXACTA de este bloque (evita el error de "siempre 20 min")
             val actualChunkDuration = chunk.size * measurementDuration
 
             when {
-                averageNoiseInChunk < thresholdDeep -> deepMinutes += actualChunkDuration
-                averageNoiseInChunk < thresholdMedium -> mediumMinutes += actualChunkDuration
+                // Menos de 30 dB -> Sueño Profundo
+                averageNoiseInChunk < 30 -> deepMinutes += actualChunkDuration
+
+                // Entre 30 y 50 dB -> Sueño Medio
+                averageNoiseInChunk < 50 -> mediumMinutes += actualChunkDuration
+
+                // Más de 50 dB -> Sueño Ligero / Despierto
                 else -> lightMinutes += actualChunkDuration
             }
         }
