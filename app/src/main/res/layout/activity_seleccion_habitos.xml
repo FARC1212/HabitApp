@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@color/fondo_pantalla">
+
+    <TextView
+        android:text="¿Qué deseas mejorar?"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@color/texto_titulo"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:text="Elige uno o varios hábitos para comenzar."
+        android:textSize="16sp"
+        android:textColor="#757575"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <CheckBox
+        android:id="@+id/checkSueno"
+        android:text="Dormir mejor (Sueño)"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <CheckBox
+        android:id="@+id/checkEjercicio"
+        android:text="Hacer deporte (Ejercicio)"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <CheckBox
+        android:id="@+id/checkRelax"
+        android:text="Reducir estrés (Relax)"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnContinuarHome"
+        android:text="Comenzar un nuevo habito"
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:backgroundTint="#673AB7"
+        android:textStyle="bold"/>
+
+</LinearLayout>
