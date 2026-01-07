@@ -9,7 +9,7 @@
     android:layout_marginVertical="6dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="@android:color/white"
+    app:cardBackgroundColor="@color/color_tarjeta"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -34,7 +34,7 @@
                     android:id="@+id/dateTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#212121"
+                    android:textColor="@color/texto_titulo"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="24/09/2024" />
@@ -43,7 +43,7 @@
                     android:id="@+id/timeRangeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#757575"
+                    android:textColor="@color/texto_secundario"
                     android:textSize="13sp"
                     android:layout_marginTop="2dp"
                     tools:text="11:05 PM - 07:15 AM" />
@@ -53,7 +53,7 @@
                 android:id="@+id/totalTimeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#673AB7"
+                android:textColor="@color/purple_500"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 tools:text="8h 10m" />
@@ -62,7 +62,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#F0F0F0"
+            android:background="@color/linea_divisoria"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"/>
 
@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:text="Profundo"
                     android:textSize="12sp"
-                    android:textColor="#757575"/>
+                    android:textColor="@color/texto_secundario"/>
                 <TextView
                     android:id="@+id/deepSleepTextView"
                     android:layout_width="wrap_content"
@@ -105,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:text="Medio"
                     android:textSize="12sp"
-                    android:textColor="#757575"/>
+                    android:textColor="@color/texto_secundario"/>
                 <TextView
                     android:id="@+id/mediumSleepTextView"
                     android:layout_width="wrap_content"
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:text="Ligero"
                     android:textSize="12sp"
-                    android:textColor="#757575"/>
+                    android:textColor="@color/texto_secundario"/>
                 <TextView
                     android:id="@+id/lightSleepTextView"
                     android:layout_width="wrap_content"
