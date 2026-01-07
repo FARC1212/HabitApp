@@ -13,17 +13,28 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. VERIFICAR SI YA EXISTE UN USUARIO
         val prefs = getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
-        val nombreGuardado = prefs.getString("NOMBRE_USUARIO", "")
 
-        if (!nombreGuardado.isNullOrEmpty()) {
-            // Si ya tiene nombre, saltamos directo a la App principal
-            irAlMenuPrincipal()
-            return // Detenemos la ejecución de esta pantalla
+        // 1. ¿YA COMPLETÓ TODO EL PROCESO? (Nombre + Selección de hábitos)
+        val onboardingCompleto = prefs.getBoolean("USER_ONBOARDING_COMPLETE", false)
+
+        if (onboardingCompleto) {
+            // Si ya terminó todo, lo mandamos directo a la pantalla principal (Home)
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return // ¡Importante! Detenemos aquí.
         }
 
-        // 2. SI NO EXISTE, MOSTRAMOS EL DISEÑO DE BIENVENIDA
+        // 2. ¿YA TIENE NOMBRE PERO LE FALTA ELEGIR HÁBITOS?
+        val nombreGuardado = prefs.getString("NOMBRE_USUARIO", "")
+        if (!nombreGuardado.isNullOrEmpty()) {
+            // Si ya sabemos cómo se llama, pasamos directo a la selección
+            irASeleccionHabitos()
+            return
+        }
+
+        // 3. SI ES UN USUARIO NUEVO (Ni nombre, ni hábitos): Mostramos el diseño
         setContentView(R.layout.activity_welcome)
 
         val etNombre = findViewById<TextInputEditText>(R.id.etNombreBienvenida)
@@ -36,15 +47,15 @@ class WelcomeActivity : AppCompatActivity() {
                 // Guardamos el nombre
                 prefs.edit().putString("NOMBRE_USUARIO", nombreIngresado).apply()
 
-                // Entramos a la app
-                irAlMenuPrincipal()
+                // Ahora sí, vamos a elegir los hábitos
+                irASeleccionHabitos()
             } else {
                 Toast.makeText(this, "Por favor, dinos cómo te llamas", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun irAlMenuPrincipal() {
+    private fun irASeleccionHabitos() {
         val intent = Intent(this, SeleccionHabitosActivity::class.java)
         startActivity(intent)
         finish()

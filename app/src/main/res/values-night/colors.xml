@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="fondo_pantalla">#121212</color>
-
     <color name="color_tarjeta">#1E1E1E</color>
-
     <color name="texto_titulo">#FFFFFF</color>
-
     <color name="purple_500">#BB86FC</color>
     <color name="teal_200">#03DAC5</color>
     <color name="color_ejercicio">#FF5722</color>
+
+    <color name="texto_secundario">#B0B0B0</color>
+    <color name="linea_divisoria">#333333</color>
+    <color name="icono_tinte">#FFFFFF</color>
+    <color name="borde_boton">#424242</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

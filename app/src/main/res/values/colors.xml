@@ -15,13 +15,13 @@
     <color name="Menu">#FFFFFF</color>
 
     <color name="fondo_pantalla">#F5F5F5</color>
-
     <color name="color_tarjeta">#FFFFFF</color>
-
     <color name="texto_titulo">#333333</color>
-
     <color name="color_ejercicio">#FF5722</color>
 
-
+    <color name="texto_secundario">#757575</color>
+    <color name="linea_divisoria">#E0E0E0</color>
+    <color name="icono_tinte">#333333</color>
+    <color name="borde_boton">#BDBDBD</color>
 
 </resources>
