@@ -175,22 +175,32 @@ class Cama : Fragment() {
     }
 
     private fun startMonitoring() {
-        navigationBarController?.setNavigationBarVisibility(false) // Hide Nav Bar
-        // ... (rest of the startMonitoring logic is the same)
+        navigationBarController?.setNavigationBarVisibility(false)
+
+        // Limpieza de datos previos
         chartEntries.clear()
         savedSessionEntries.clear()
         rawSoundLevels.clear()
-        sessionStartTime = Date()
+
+        val startTimeMs = System.currentTimeMillis() // Marca de tiempo exacta (Long)
+        sessionStartTime = Date(startTimeMs)
+
         updateChart()
 
-        statusTextView.text = "Monitoreando sonido..."
         startButton.isEnabled = false
         stopButton.isEnabled = true
         alarmButton.isEnabled = false
 
         latestSoundLevel = 0.0
         soundMonitor = SoundMonitor()
+
+        // --- CAMBIO 1: IGNORAR LOS PRIMEROS 10 SEGUNDOS (CALIBRACIÓN) ---
         soundMonitor?.startMonitoring { soundLevel ->
+            // Si han pasado menos de 10 segundos (10,000 ms), ignoramos la lectura
+            if (System.currentTimeMillis() - startTimeMs < 10000) {
+                return@startMonitoring
+            }
+
             val finiteSoundLevel = if (soundLevel.isFinite()) soundLevel else 0.0
             latestSoundLevel = finiteSoundLevel
             synchronized(rawSoundLevels) {
@@ -198,13 +208,34 @@ class Cama : Fragment() {
             }
         }
 
+        // --- CAMBIO 2: CRONÓMETRO EN TIEMPO REAL ---
         chartUpdateTimer = timer(period = 1000) {
-            val elapsedTimeInSeconds = sessionStartTime?.let { (Date().time - it.time) / 1000f } ?: 0f
-            chartEntries.add(Entry(elapsedTimeInSeconds / 60, latestSoundLevel.toFloat()))
+            val now = System.currentTimeMillis()
+            val elapsedMs = now - startTimeMs
+
+            // Si estamos en los primeros 10 segundos, mostramos "Calibrando..."
+            if (elapsedMs < 10000) {
+                activity?.runOnUiThread {
+                    statusTextView.text = "Calibrando micrófono... ${(10 - elapsedMs/1000)}s"
+                }
+                return@timer
+            }
+
+            // Agregamos punto a la gráfica
+            val elapsedSecondsReal = (elapsedMs - 10000) / 1000f // Ajustamos el tiempo gráfico
+            chartEntries.add(Entry(elapsedSecondsReal / 60, latestSoundLevel.toFloat()))
+
             activity?.runOnUiThread {
                 if (isAdded) {
                     updateChart()
-                    statusTextView.text = "Nivel de ruido actual: ${"%.2f".format(latestSoundLevel)} dB"
+
+                    // Formateamos el cronómetro HH:MM:SS
+                    val horas = (elapsedMs / 3600000)
+                    val minutos = (elapsedMs % 3600000) / 60000
+                    val segundos = (elapsedMs % 60000) / 1000
+                    val tiempoTexto = String.format("%02d:%02d:%02d", horas, minutos, segundos)
+
+                    statusTextView.text = "⏱ $tiempoTexto  |  🔊 ${"%.1f".format(latestSoundLevel)} dB"
                 }
             }
         }
@@ -332,18 +363,25 @@ class Cama : Fragment() {
     private fun analyzeAndSaveSession() {
         val sessionEndTime = Date()
         val startTime = sessionStartTime ?: return
-        val sessionData = savedSessionEntries.toList()
 
+        // 1. Validación de tiempo mínimo (1 minuto)
+        val duracionSesion = sessionEndTime.time - startTime.time
+        if (duracionSesion < 60000) {
+            Toast.makeText(context, "Sesión muy corta (< 1 min), no se registró.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // 2. Analizar los datos
+        val sessionData = savedSessionEntries.toList()
         if (sessionData.isEmpty() || !isAdded) return
 
-        // 1. Analizar los datos
         val (lightSleepMinutes, mediumSleepMinutes, deepSleepMinutes) = analyzeSleepStages(sessionData)
-        val totalMinutes = (sessionEndTime.time - startTime.time) / 60000
+        val totalMinutes = duracionSesion / 60000
 
-        // Formateamos el texto (Ej: "7h 30m")
+        // Formateamos el texto
         val totalTimeStr = formatMinutesToHoursAndMinutes(totalMinutes)
 
-        // 2. Formatear los datos para el modelo SleepSession (JSON)
+        // 3. Crear el objeto Session (AQUÍ ESTABA EL FALTANTE)
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
@@ -357,45 +395,65 @@ class Cama : Fragment() {
             deepSleepTime = formatMinutesToHoursAndMinutes(deepSleepMinutes.toLong())
         )
 
-        // 3. Guardar JSON (Historial)
+        // 4. Guardar JSON (Historial)
         saveSessionAsJson(session, startTime)
 
-        // --- NUEVO: GUARDAR PARA LA PANTALLA DE INICIO ---
+        // 5. Guardar para la PANTALLA DE INICIO y CALENDARIO
         val prefs = requireContext().getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
+
         prefs.edit().apply {
-            // Guardamos el tiempo total (Ej: "7h 15m")
+            // Datos para la tarjeta de resumen
             putString("ULTIMO_SUENO_TIEMPO", totalTimeStr)
-            // Guardamos la fecha para saber si es de hoy
             putString("FECHA_ULTIMO_SUENO", dateFormat.format(sessionEndTime))
+
+            // Datos para el calendario (Cuadrito verde)
+            val fechaParaCalendario = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(sessionEndTime)
+
+            val historialSet = prefs.getStringSet("HISTORIAL_SUENO", HashSet())?.toMutableSet() ?: mutableSetOf()
+            historialSet.add(fechaParaCalendario)
+
+            putStringSet("HISTORIAL_SUENO", historialSet)
             apply()
         }
-        // ------------------------------------------------
     }
-
-    // AÑADE esta función para el análisis de las fases de sueño
     private fun analyzeSleepStages(entries: List<Entry>): Triple<Int, Int, Int> {
-        val stageDurationMinutes = 20 // Duración de cada bloque a analizar
-        var light = 0
-        var medium = 0
-        var deep = 0
+        var lightMinutes = 0.0
+        var mediumMinutes = 0.0
+        var deepMinutes = 0.0
 
-        // Agrupa las entradas de promedios (cada una representa 30s) en bloques de 20 minutos.
-        // Como cada entrada es de 30s, necesitamos 40 entradas para hacer 20 minutos.
-        val entriesPerChunk = 40
+        val measurementDuration = 0.5 // Cada entrada son 30 segundos
+
+        // 1. AUTO-CALIBRACIÓN CON SUELO MÍNIMO DE 30 dB
+        // Buscamos el valor más bajo registrado. Si es menor a 30 (ej. 10 o 0),
+        // forzamos a que sea 30. Esto evita que errores de "silencio absoluto"
+        // hagan imposible detectar el sueño ligero.
+        val rawMin = entries.map { it.y }.minOrNull()?.toDouble() ?: 30.0
+        val minNoiseLevel = rawMin.coerceAtLeast(30.0)
+
+        // 2. UMBRALES HÍBRIDOS (Dinámico + Tope Fijo)
+
+        // Sueño Profundo: Piso + 10dB (aprox 40dB), pero NUNCA más de 45dB.
+        val thresholdDeep = kotlin.math.min(minNoiseLevel + 10.0, 45.0)
+
+        // Sueño Medio: Piso + 20dB (aprox 50dB), pero NUNCA más de 60dB.
+        val thresholdMedium = kotlin.math.min(minNoiseLevel + 20.0, 60.0)
+
+        // 3. ANÁLISIS POR BLOQUES DE 10 MINUTOS
+        val entriesPerChunk = 20
         val chunks = entries.windowed(size = entriesPerChunk, step = entriesPerChunk, partialWindows = true)
 
         for (chunk in chunks) {
             val averageNoiseInChunk = chunk.map { it.y }.average()
-            // Define tus umbrales de ruido aquí
+            val actualChunkDuration = chunk.size * measurementDuration
+
             when {
-                averageNoiseInChunk < 35 -> deep++   // Ruido bajo -> Sueño Profundo
-                averageNoiseInChunk < 50 -> medium++ // Ruido medio -> Sueño Medio
-                else -> light++                      // Ruido alto -> Sueño Ligero o despierto
+                averageNoiseInChunk < thresholdDeep -> deepMinutes += actualChunkDuration
+                averageNoiseInChunk < thresholdMedium -> mediumMinutes += actualChunkDuration
+                else -> lightMinutes += actualChunkDuration
             }
         }
 
-        // Multiplica el contador de cada fase por la duración de los bloques
-        return Triple(light * stageDurationMinutes, medium * stageDurationMinutes, deep * stageDurationMinutes)
+        return Triple(lightMinutes.toInt(), mediumMinutes.toInt(), deepMinutes.toInt())
     }
 
     // AÑADE esta función para guardar el archivo en formato JSON
@@ -429,6 +487,12 @@ class Cama : Fragment() {
 
     private fun setupChart() {
         sleepChart.description.isEnabled = false
+
+        // --- NUEVO: ELIMINAR TEXTO "NO DATA" ---
+        sleepChart.setNoDataText("") // Lo dejamos vacío para que no muestre nada
+        // Opcional: También puedes poner un mensaje amigable como "Inicia para ver datos"
+        // ----------------------------------------
+
         sleepChart.setTouchEnabled(true)
         sleepChart.isDragEnabled = true
         sleepChart.setScaleEnabled(true)
@@ -446,6 +510,9 @@ class Cama : Fragment() {
             setDrawAxisLine(false)
             gridColor = Color.LTGRAY
         }
+
+        // Es buena práctica refrescar el gráfico al inicio para aplicar el cambio
+        sleepChart.invalidate()
     }
 
     private fun updateChart() {

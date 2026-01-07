@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.habitapp3.R
+import java.io.File
 
 class Opciones : Fragment() {
 
@@ -36,7 +37,6 @@ class Opciones : Fragment() {
         val etNombre = view.findViewById<EditText>(R.id.etNombreUsuario)
         val btnGuardar = view.findViewById<Button>(R.id.btnGuardarNombre)
 
-        // Cargar nombre actual si existe
         val nombreActual = prefs.getString("NOMBRE_USUARIO", "")
         etNombre.setText(nombreActual)
 
@@ -52,16 +52,11 @@ class Opciones : Fragment() {
 
         // --- 2. LÓGICA DEL MODO OSCURO ---
         val switchOscuro = view.findViewById<SwitchMaterial>(R.id.switchModoOscuro)
-
-        // Detectar estado actual
         val esOscuro = prefs.getBoolean("MODO_OSCURO", false)
         switchOscuro.isChecked = esOscuro
 
         switchOscuro.setOnCheckedChangeListener { _, isChecked ->
-            // Guardar preferencia
             prefs.edit().putBoolean("MODO_OSCURO", isChecked).apply()
-
-            // Aplicar cambio (Esto reiniciará la actividad brevemente)
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {
@@ -80,20 +75,42 @@ class Opciones : Fragment() {
     private fun mostrarAlertaBorrado() {
         AlertDialog.Builder(requireContext())
             .setTitle("¿Estás seguro?")
-            .setMessage("Se perderán todos tus registros de sueño y configuración de ejercicios. Esta acción no se puede deshacer.")
+            .setMessage("Se perderán todos tus registros de sueño, historial de relax y progreso de ejercicios. Esta acción no se puede deshacer.")
             .setPositiveButton("Sí, borrar todo") { _, _ ->
-                // Borrar todo el SharedPreferences
+
+                // 1. Borrar Preferencias Generales (Ejercicio, Configuración, Nombre)
                 prefs.edit().clear().apply()
 
-                // Opcional: Restablecer modo claro por defecto
+                // 2. Borrar Historial de Relax (IMPORTANTE: Aquí se guardan las sesiones)
+                requireContext().getSharedPreferences("RelaxHistory", Context.MODE_PRIVATE).edit().clear().apply()
+
+                // 3. Borrar Archivos de Sueño (Los .json generados)
+                borrarArchivosDeSueno()
+
+                // 4. Restablecer modo claro por defecto
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-                Toast.makeText(context, "Aplicación reiniciada", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Aplicación reiniciada por completo", Toast.LENGTH_LONG).show()
 
-                // Reiniciar la actividad para que se limpien las vistas
+                // Reiniciar la actividad para limpiar la pantalla
                 activity?.recreate()
             }
             .setNegativeButton("Cancelar", null)
             .show()
+    }
+
+    private fun borrarArchivosDeSueno() {
+        try {
+            val directory = requireContext().filesDir
+            // Busca y elimina todos los archivos session_*.json
+            val archivos = directory.listFiles { file ->
+                file.name.startsWith("session_") && file.name.endsWith(".json")
+            }
+            archivos?.forEach { archivo ->
+                archivo.delete()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

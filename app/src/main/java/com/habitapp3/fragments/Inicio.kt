@@ -55,38 +55,45 @@ class Inicio : Fragment() {
         val fechaHoy = Calendar.getInstance()
         val calendario = Calendar.getInstance()
 
-        // Ajustar al Lunes de la semana actual
+        // Ajustar al Lunes
         calendario.firstDayOfWeek = Calendar.MONDAY
         calendario.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
 
         val formatoNombre = SimpleDateFormat("EEE", Locale("es", "ES"))
         val formatoNumero = SimpleDateFormat("dd", Locale.getDefault())
-
-        // --- NUEVO: PREPARAMOS LA LECTURA DEL HISTORIAL ---
-        // Formato para comparar con lo guardado en base de datos (Ej: "2024-05-20")
         val formatoGuardado = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        val context = context ?: return emptyList() // Seguridad por si el contexto es nulo
+        val context = context ?: return emptyList()
         val prefs = context.getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
 
-        // Obtenemos la lista de días cumplidos (Si no hay nada, devuelve lista vacía)
-        val historialSet = prefs.getStringSet("HISTORIAL_RUTINAS", emptySet()) ?: emptySet()
+        // 1. RECUPERAMOS QUÉ HÁBITOS ESTÁN ACTIVOS
+        val verEjercicio = prefs.getBoolean("VER_EJERCICIO", true)
+        val verSueno = prefs.getBoolean("VER_SUENO", true)
+        val verRelax = prefs.getBoolean("VER_RELAX", true)
 
-        // ---------------------------------------------------
+        // 2. RECUPERAMOS LOS HISTORIALES DE CADA UNO
+        val historialEjercicio = prefs.getStringSet("HISTORIAL_RUTINAS", emptySet()) ?: emptySet()
+        val historialSueno = prefs.getStringSet("HISTORIAL_SUENO", emptySet()) ?: emptySet()
+        val historialRelax = prefs.getStringSet("HISTORIAL_RELAX", emptySet()) ?: emptySet()
 
         for (i in 0..6) {
             val nombre = formatoNombre.format(calendario.time).uppercase().replace(".", "")
             val numero = formatoNumero.format(calendario.time)
-
-            // Obtenemos la fecha actual del bucle en formato texto (ej: "2024-05-20")
             val fechaBucleString = formatoGuardado.format(calendario.time)
 
-            // 1. ¿Es hoy?
             val esHoy = (calendario.get(Calendar.DAY_OF_YEAR) == fechaHoy.get(Calendar.DAY_OF_YEAR)) &&
                     (calendario.get(Calendar.YEAR) == fechaHoy.get(Calendar.YEAR))
 
-            // 2. ¿Está completado? (Buscamos si la fecha existe en el historial)
-            val estaCompletado = historialSet.contains(fechaBucleString)
+            // --- LÓGICA DE COMPLETADO ---
+            // Un día está "Completado" si CUMPLISTE con todo lo que tenías visible.
+            // Si un hábito está oculto (!ver...), cuenta como "cumplido" para no bloquear el cuadro verde.
+
+            val cumplioEjercicio = !verEjercicio || historialEjercicio.contains(fechaBucleString)
+            val cumplioSueno = !verSueno || historialSueno.contains(fechaBucleString)
+            val cumplioRelax = !verRelax || historialRelax.contains(fechaBucleString)
+
+            // El día es verde solo si TODO lo activo está hecho
+            val estaCompletado = cumplioEjercicio && cumplioSueno && cumplioRelax
 
             listaDias.add(CalendarDay(nombre, numero, isCompleted = estaCompletado, isSelected = esHoy))
 
@@ -103,38 +110,27 @@ class Inicio : Fragment() {
 
     private fun actualizarTablero() {
         val view = view ?: return
-        val context = requireContext()
+        val context = context ?: return // Usamos context safe call
         val prefs = context.getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
         val fechaHoySistema = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
         // ----------------------------------------------------
-        // 1. NUEVO: CONTROL DE VISIBILIDAD (OCULTAR TARJETAS)
+        // 1. CONTROL DE VISIBILIDAD
         // ----------------------------------------------------
-        // Leemos si el usuario activó estos hábitos (Por defecto 'true' para que se vean si no hay datos)
         val verSueno = prefs.getBoolean("VER_SUENO", true)
         val verEjercicio = prefs.getBoolean("VER_EJERCICIO", true)
         val verRelax = prefs.getBoolean("VER_RELAX", true)
 
-        // Buscamos las tarjetas por el ID que acabamos de poner en el XML
         val cardSueno = view.findViewById<View>(R.id.cardSuenoContainer)
         val cardEjercicio = view.findViewById<View>(R.id.cardEjercicioContainer)
         val cardRelax = view.findViewById<View>(R.id.cardRelaxContainer)
 
-        // Si el usuario dijo que NO quería ver sueño, usamos View.GONE (Desaparece y no ocupa espacio)
-        if (cardSueno != null) {
-            cardSueno.visibility = if (verSueno) View.VISIBLE else View.GONE
-        }
-
-        if (cardEjercicio != null) {
-            cardEjercicio.visibility = if (verEjercicio) View.VISIBLE else View.GONE
-        }
-
-        if (cardRelax != null) {
-            cardRelax.visibility = if (verRelax) View.VISIBLE else View.GONE
-        }
+        if (cardSueno != null) cardSueno.visibility = if (verSueno) View.VISIBLE else View.GONE
+        if (cardEjercicio != null) cardEjercicio.visibility = if (verEjercicio) View.VISIBLE else View.GONE
+        if (cardRelax != null) cardRelax.visibility = if (verRelax) View.VISIBLE else View.GONE
 
         // ----------------------------------------------------
-        // 2. FECHA Y SALUDO (Lógica anterior)
+        // 2. FECHA Y SALUDO
         // ----------------------------------------------------
         val tvSaludo = view.findViewById<TextView>(R.id.tvWelcome)
         val fechaTexto = SimpleDateFormat("EEEE, d 'de' MMMM", Locale("es", "ES")).format(Date())
@@ -149,7 +145,7 @@ class Inicio : Fragment() {
         // ----------------------------------------------------
         // 3. DATOS DE SUEÑO
         // ----------------------------------------------------
-        if (verSueno) { // Solo actualizamos el texto si la tarjeta es visible
+        if (verSueno) {
             val tvSuenoHoras = view.findViewById<TextView>(R.id.tvSuenoHoras)
             val ultimoSueno = prefs.getString("ULTIMO_SUENO_TIEMPO", "--h --m")
             if (tvSuenoHoras != null) tvSuenoHoras.text = ultimoSueno
@@ -158,7 +154,7 @@ class Inicio : Fragment() {
         // ----------------------------------------------------
         // 4. DATOS DE EJERCICIO
         // ----------------------------------------------------
-        if (verEjercicio) { // Solo actualizamos texto si es visible
+        if (verEjercicio) {
             val nombreRutina = prefs.getString("NOMBRE_RUTINA_TEXTO", "Sin rutina")
             val ultimoEntreno = prefs.getString("ULTIMO_ENTRENAMIENTO", "")
 
@@ -181,6 +177,28 @@ class Inicio : Fragment() {
             }
         }
 
-        // (La sección de Relax no tenía lógica de texto todavía, así que solo ocultamos la tarjeta arriba)
+        // ----------------------------------------------------
+        // 5. DATOS DE RELAX (NUEVO)
+        // ----------------------------------------------------
+        if (verRelax) {
+            val tvEstadoRelax = view.findViewById<TextView>(R.id.tvEstadoRelax)
+
+            // Accedemos a las preferencias DONDE GUARDAMOS EL HISTORIAL (RelaxHistory)
+            val prefsRelax = context.getSharedPreferences("RelaxHistory", Context.MODE_PRIVATE)
+            val historial = prefsRelax.getString("LISTA_SESIONES", "") ?: ""
+
+            // Generamos la fecha de hoy "dd/MM/yyyy" para buscarla en el historial
+            val fechaHoyRelax = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+            if (tvEstadoRelax != null) {
+                if (historial.contains(fechaHoyRelax)) {
+                    tvEstadoRelax.text = "✅ Mente relajada por hoy"
+                    tvEstadoRelax.setTextColor(android.graphics.Color.parseColor("#4CAF50")) // Verde
+                } else {
+                    tvEstadoRelax.text = "🍃 Tómate un respiro hoy"
+                    tvEstadoRelax.setTextColor(android.graphics.Color.GRAY) // Gris normal
+                }
+            }
+        }
     }
 }

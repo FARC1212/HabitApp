@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.HashSet
 import java.util.Locale
 
 class DetalleEjercicioActivity : AppCompatActivity() {
@@ -43,12 +44,10 @@ class DetalleEjercicioActivity : AppCompatActivity() {
             val editor = prefs.edit()
             editor.putInt("SPLIT_SELECCIONADO", checkedId)
 
-            // Guardamos el nombre en texto para que el INICIO lo lea
             val nombreRutina = if (checkedId == R.id.rbPPL) "Push - Pull - Leg" else "Upper - Lower"
             editor.putString("NOMBRE_RUTINA_TEXTO", nombreRutina)
             editor.apply()
 
-            // Actualizar visibilidad
             if (checkedId == R.id.rbPPL) {
                 layoutPPL.visibility = View.VISIBLE
                 layoutUL.visibility = View.GONE
@@ -58,7 +57,7 @@ class DetalleEjercicioActivity : AppCompatActivity() {
             }
         }
 
-        // 3. CONFIGURAR LOS DÍAS (Aquí sucede la magia de la gráfica)
+        // 3. CONFIGURAR LOS DÍAS
         // PPL
         configurarDia(R.id.ppl_dia1, "Día 1: Push", "• Press Banca\n• Press Militar...")
         configurarDia(R.id.ppl_dia2, "Día 2: Pull", "• Dominadas\n• Remo Barra...")
@@ -84,27 +83,34 @@ class DetalleEjercicioActivity : AppCompatActivity() {
         tvTitulo.text = titulo
         tvEjercicios.text = rutina
 
-        // --- LÓGICA IMPORTANTE PARA TU GRÁFICA ---
         val fechaHoy = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val prefs = getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
 
-        // Clave única para este checkbox hoy
+        // Estado visual del checkbox
         val keyCheckbox = "DONE_${includeId}_$fechaHoy"
         checkbox.isChecked = prefs.getBoolean(keyCheckbox, false)
 
         checkbox.setOnCheckedChangeListener { _, isChecked ->
             val editor = prefs.edit()
-            editor.putBoolean(keyCheckbox, isChecked) // Recordar el checkbox
+            // 1. Guardar estado visual del checkbox
+            editor.putBoolean(keyCheckbox, isChecked)
+
+            // 2. CORRECCIÓN PRINCIPAL: Usamos el Set "HISTORIAL_RUTINAS"
+            // Leemos el historial actual y creamos una copia mutable
+            val historialSet = prefs.getStringSet("HISTORIAL_RUTINAS", HashSet())?.toMutableSet() ?: mutableSetOf()
 
             if (isChecked) {
-                // 1. Guardar que HOY se entrenó (Para Inicio y para el color de la tarjeta)
+                // Agregar fecha hoy al historial
+                historialSet.add(fechaHoy)
+                // Actualizar último entreno (para mensaje de Inicio)
                 editor.putString("ULTIMO_ENTRENAMIENTO", fechaHoy)
-
-                // 2. Guardar para la GRÁFICA (Esto lo lee tu fragmento Ejercicio.kt)
-                editor.putBoolean("HISTORIAL_$fechaHoy", true)
             } else {
-                // Si desmarca, podrías querer borrar el historial, pero por ahora lo dejamos simple
+                // Si desmarcamos, borramos la fecha del historial
+                historialSet.remove(fechaHoy)
             }
+
+            // Guardamos el Set actualizado
+            editor.putStringSet("HISTORIAL_RUTINAS", historialSet)
             editor.apply()
         }
 
