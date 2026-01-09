@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/fondo_pantalla"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:id="@+id/layoutPregunta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/noti"
+                app:tint="@color/texto_titulo"
+                android:layout_marginBottom="32dp"/>
+            <TextView
+                android:text="¿Quieres recibir recordatorios?"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/texto_titulo"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Te ayudaremos a mantener la constancia con pequeños avisos."
+                android:textSize="16sp"
+                android:textColor="@color/texto_secundario"
+                android:textAlignment="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="48dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSiQuiero"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Sí, activar recordatorios"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/verde_agua"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/btnNoGracias"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ahora no, gracias"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/texto_secundario"
+                android:padding="12dp"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/layoutConfiguracion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:text="Personaliza tu Horario"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/texto_titulo"
+                android:layout_marginBottom="24dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/color_tarjeta"
+                app:strokeWidth="0dp"
+                android:layout_marginBottom="32dp">
+
+                <RadioGroup
+                    android:id="@+id/radioGroupFrecuencia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <RadioButton
+                        android:id="@+id/rb4Horas"
+                        android:text="Cada 4 horas"
+                        android:textSize="16sp"
+                        android:textColor="@color/texto_titulo"
+                        android:buttonTint="@color/verde_agua"
+                        android:layout_marginBottom="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <RadioButton
+                        android:id="@+id/rb12Horas"
+                        android:text="Cada 12 horas"
+                        android:textSize="16sp"
+                        android:textColor="@color/texto_titulo"
+                        android:buttonTint="@color/verde_agua"
+                        android:layout_marginBottom="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <RadioButton
+                        android:id="@+id/rbHoraFija"
+                        android:text="A una hora específica"
+                        android:textSize="16sp"
+                        android:textColor="@color/texto_titulo"
+                        android:buttonTint="@color/verde_agua"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <LinearLayout
+                        android:id="@+id/layoutTimePicker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginStart="32dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:text="Hora:"
+                            android:textColor="@color/texto_secundario"
+                            android:layout_marginEnd="12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/tvHoraSeleccionada"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="09:00 AM"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/verde_agua"
+                            android:background="@drawable/custom_progressbar"
+                            android:backgroundTint="@color/fondo_pantalla"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="8dp"/>
+                    </LinearLayout>
+                </RadioGroup>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFinalizar"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Comenzar Aventura"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/verde_agua"
+                app:cornerRadius="12dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
