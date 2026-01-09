@@ -25,7 +25,7 @@ class SeleccionHabitosActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Guardamos las preferencias
+            // Guardamos las preferencias de los hábitos
             val prefs = getSharedPreferences("HabitAppPrefs", Context.MODE_PRIVATE)
             val editor = prefs.edit()
 
@@ -33,13 +33,13 @@ class SeleccionHabitosActivity : AppCompatActivity() {
             editor.putBoolean("VER_EJERCICIO", checkEjercicio.isChecked)
             editor.putBoolean("VER_RELAX", checkRelax.isChecked)
 
-            // Marcamos que ya pasó por el registro (para futuras mejoras)
-            editor.putBoolean("USER_ONBOARDING_COMPLETE", true)
+            // IMPORTANTE: Aquí borré la línea de "USER_ONBOARDING_COMPLETE".
+            // Esa se guardará recién en la siguiente pantalla (Recordatorios).
 
             editor.apply()
 
-            // Vamos a la pantalla principal
-            val intent = Intent(this, MainActivity::class.java)
+            // CAMBIO: Ahora vamos a la pantalla de Recordatorios, no al Main
+            val intent = Intent(this, RecordatoriosActivity::class.java)
             startActivity(intent)
             finish()
         }

@@ -1,6 +1,7 @@
 package com.habitapp3.fragments
 
 import android.content.Context
+import android.content.Intent // IMPORTANTE: Necesario para cambiar de pantalla
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.habitapp3.R
+import com.habitapp3.RecordatoriosActivity // Asegúrate de que este nombre coincida con tu Activity
 import java.io.File
 
 class Opciones : Fragment() {
@@ -64,7 +66,17 @@ class Opciones : Fragment() {
             }
         }
 
-        // --- 3. LÓGICA DE REINICIAR DATOS ---
+        // --- 3. LÓGICA DE NOTIFICACIONES (NUEVO) ---
+        // Buscamos el botón que pusimos en el XML nuevo
+        val btnNotis = view.findViewById<View>(R.id.btnConfigurarNotis)
+
+        btnNotis.setOnClickListener {
+            // Abrimos la actividad de Recordatorios
+            val intent = Intent(requireContext(), RecordatoriosActivity::class.java)
+            startActivity(intent)
+        }
+
+        // --- 4. LÓGICA DE REINICIAR DATOS ---
         val btnBorrar = view.findViewById<Button>(R.id.btnReiniciarDatos)
 
         btnBorrar.setOnClickListener {
@@ -78,13 +90,13 @@ class Opciones : Fragment() {
             .setMessage("Se perderán todos tus registros de sueño, historial de relax y progreso de ejercicios. Esta acción no se puede deshacer.")
             .setPositiveButton("Sí, borrar todo") { _, _ ->
 
-                // 1. Borrar Preferencias Generales (Ejercicio, Configuración, Nombre)
+                // 1. Borrar Preferencias Generales
                 prefs.edit().clear().apply()
 
-                // 2. Borrar Historial de Relax (IMPORTANTE: Aquí se guardan las sesiones)
+                // 2. Borrar Historial de Relax
                 requireContext().getSharedPreferences("RelaxHistory", Context.MODE_PRIVATE).edit().clear().apply()
 
-                // 3. Borrar Archivos de Sueño (Los .json generados)
+                // 3. Borrar Archivos de Sueño
                 borrarArchivosDeSueno()
 
                 // 4. Restablecer modo claro por defecto
@@ -92,8 +104,11 @@ class Opciones : Fragment() {
 
                 Toast.makeText(context, "Aplicación reiniciada por completo", Toast.LENGTH_LONG).show()
 
-                // Reiniciar la actividad para limpiar la pantalla
-                activity?.recreate()
+                // Reiniciar la actividad para limpiar la pantalla y volver al inicio (probablemente Login)
+                // Ojo: Al borrar prefs, la app volverá a pedir nombre al reiniciar
+                val intent = requireActivity().intent
+                requireActivity().finish()
+                startActivity(intent)
             }
             .setNegativeButton("Cancelar", null)
             .show()
@@ -102,7 +117,6 @@ class Opciones : Fragment() {
     private fun borrarArchivosDeSueno() {
         try {
             val directory = requireContext().filesDir
-            // Busca y elimina todos los archivos session_*.json
             val archivos = directory.listFiles { file ->
                 file.name.startsWith("session_") && file.name.endsWith(".json")
             }

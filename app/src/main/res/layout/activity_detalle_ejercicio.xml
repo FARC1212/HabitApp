@@ -1,51 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="#F5F5F5">
+    android:fillViewport="true"
+    android:background="@color/fondo_pantalla">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="50dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Control de Rutina"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/texto_titulo"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gestiona tu semana de entrenamiento"
+                android:textSize="14sp"
+                android:textColor="@color/texto_secundario"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="@color/color_tarjeta"
+            app:strokeWidth="0dp"
+            app:cardElevation="0dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Progreso Semanal"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/texto_titulo"/>
+
+                    <TextView
+                        android:id="@+id/tvProgresoTexto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0/5"
+                        android:textStyle="bold"
+                        android:textColor="@color/verde_agua"/>
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progressBarRutina"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:progressDrawable="@drawable/custom_progressbar"
+                    android:progress="0"
+                    android:max="5"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¡Sigue así! La constancia es clave."
+                    android:textSize="12sp"
+                    android:textColor="@color/texto_secundario"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="@color/color_tarjeta"
+            app:strokeWidth="0dp"
+            app:cardElevation="0dp"
+            android:layout_marginBottom="24dp">
+
+            <RadioGroup
+                android:id="@+id/radioGroupSplit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="16dp">
+
+                <RadioButton
+                    android:id="@+id/rbPPL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Push - Pull - Leg"
+                    android:checked="true"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/texto_titulo"
+                    android:buttonTint="@color/verde_agua"
+                    android:layout_marginEnd="16dp"/>
+
+                <RadioButton
+                    android:id="@+id/rbUpperLower"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upper - Lower"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/texto_titulo"
+                    android:buttonTint="@color/verde_agua"/>
+            </RadioGroup>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Elige tu Rutina (Split)"
-            android:textSize="20sp"
+            android:text="Días de Entrenamiento"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/verde_agua"
-            android:gravity="center"
-            android:layout_marginBottom="10dp"/>
-
-        <RadioGroup
-            android:id="@+id/radioGroupSplit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="20dp">
-
-            <RadioButton
-                android:id="@+id/rbPPL"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Push - Pull - Leg"
-                android:checked="true"
-                android:buttonTint="@color/verde_agua"
-                android:layout_marginEnd="16dp"/>
-
-            <RadioButton
-                android:id="@+id/rbUpperLower"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upper - Lower"
-                android:buttonTint="@color/verde_agua"/>
-        </RadioGroup>
+            android:textColor="@color/texto_titulo"
+            android:layout_marginBottom="12dp"/>
 
         <LinearLayout
             android:id="@+id/layoutPPL"
@@ -59,7 +160,6 @@
             <include layout="@layout/item_dia_rutina" android:id="@+id/ppl_dia3"/>
             <include layout="@layout/item_dia_rutina" android:id="@+id/ppl_dia4"/>
             <include layout="@layout/item_dia_rutina" android:id="@+id/ppl_dia5"/>
-
         </LinearLayout>
 
         <LinearLayout
@@ -67,13 +167,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"> <include layout="@layout/item_dia_rutina" android:id="@+id/ul_dia1"/>
+            android:visibility="gone">
+
+            <include layout="@layout/item_dia_rutina" android:id="@+id/ul_dia1"/>
             <include layout="@layout/item_dia_rutina" android:id="@+id/ul_dia2"/>
             <include layout="@layout/item_dia_rutina" android:id="@+id/ul_dia3"/>
             <include layout="@layout/item_dia_rutina" android:id="@+id/ul_dia4"/>
             <include layout="@layout/item_dia_rutina" android:id="@+id/ul_dia5"/>
-
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegistrarAvance"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="24dp"
+            android:text="Confirmar Avance de Hoy"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/verde_agua"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/check"
+            app:iconTint="#FFFFFF"
+            app:iconGravity="textStart"/>
+
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

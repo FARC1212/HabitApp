@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:paddingBottom="80dp">
 
         <TextView
             android:id="@+id/tvWelcome"
@@ -32,12 +34,14 @@
             android:scrollbars="none"
             android:layout_marginBottom="24dp"/>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardSuenoContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/color_tarjeta"
+            app:strokeWidth="0dp"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -46,37 +50,58 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:text="Sueño"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/texto_titulo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:text="Sueño"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/texto_titulo"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckSueno"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/check"
+                        app:tint="@color/purple_500"
+                        android:visibility="gone"
+                        tools:visibility="visible"/>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvSuenoHoras"
                     android:text="--h --m"
                     android:textSize="32sp"
                     android:textStyle="bold"
+                    android:textColor="@color/texto_titulo"
                     android:layout_marginTop="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
                 <TextView
                     android:text="Objetivo: 8 horas"
+                    android:textSize="14sp"
+                    android:textColor="@color/texto_secundario"
                     android:layout_marginTop="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardEjercicioContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/color_tarjeta"
+            app:strokeWidth="0dp"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -85,13 +110,29 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:text="Ejercicio"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/texto_titulo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:text="Ejercicio"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/texto_titulo"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckEjercicio"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/check"
+                        app:tint="@color/verde_agua"
+                        android:visibility="gone"
+                        tools:visibility="visible"/>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -104,26 +145,31 @@
                         android:text="Sin rutina"
                         android:textSize="22sp"
                         android:textStyle="bold"
+                        android:textColor="@color/texto_titulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
                     <TextView
                         android:id="@+id/tvEstadoEjercicio"
                         android:text="Estado pendiente"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/texto_secundario"
                         android:layout_marginTop="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardRelaxContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/color_tarjeta"
+            app:strokeWidth="0dp"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -132,22 +178,40 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:text="Relax"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/texto_titulo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:text="Relax"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/texto_titulo"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckRelax"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/check"
+                        app:tint="@color/Relax"
+                        android:visibility="gone"
+                        tools:visibility="visible"/>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvEstadoRelax"
                     android:text="Hoy no has registrado sesiones."
+                    android:textSize="14sp"
+                    android:textColor="@color/texto_secundario"
                     android:layout_marginTop="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
